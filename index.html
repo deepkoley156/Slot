@@ -348,3 +348,22 @@ function frame(ts) {
   if (S.playing) {
     S.simT = Math.min(S.total, S.simT + dt * S.speed);
     advance(S.simT); S.spin += dt * 14;
+    if (S.simT >= S.total) { S.playing = false; $('btnPlay').textContent = 'Replay'; }
+  }
+  render();
+  raf = requestAnimationFrame(frame);
+}
+ 
+function render() {
+  const { sc, half, cx, cy, tool, moves, ptr, sh } = S;
+  const done = ptr >= moves.length;
+  const m = done ? moves[moves.length - 1] : moves[ptr];
+  const q = done ? m.to : pos(m, S.frac), cr = tool / 2;
+  const cutting = q.z < 0 && m.type !== 'R' && !done;
+  const X = x => 220 + (x - cx) * sc, Y = y => 220 - (y - cy) * sc;
+ 
+  /* top view */
+  const c = $('topCanvas').getContext('2d');
+  c.clearRect(0, 0, 440, 440);
+  c.drawImage(S.stock, 0, 0);
+  c.strokeStyle = '#7a7a7a'; c.lineWidth = 1; stockPath(c); c.stroke();
